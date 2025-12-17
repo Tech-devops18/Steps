@@ -1,0 +1,181 @@
+###Creating and Deploying Java Web Applications using Maven and Tomcat #####
+Prerequisites
+Before we begin, make sure you have the following tools installed on your system:
+
+1.JDK (Java Development Kit) — version 8 or higher
+2.Apache Maven — version 3.6 or higher
+3.Apache Tomcat — version 9 or higher
+
+
+install  java 
+*verify java 
+
+#sudo -i
+#apt update
+#apt install openjdk-11-jdk
+
+#java -version
+
+Install maven 
+
+#sudo apt install maven
+
+#mvn -version
+
+###########################################
+
+#cd  /opt/
+
+CREATE MAVEN PROJECT/ Folder Structure with this cmd
+
+
+Run the  following cmd
+
+#mvn archetype:generate -DgroupId=com.example -DartifactId=DemoApp -DarchetypeArtifactId=maven-archetype-webapp -DinteractiveMode=false
+
+
+Configure project by modify this pom.xml
+
+# >   /opt/DemoApp/pom.xml   # EMPTY  THE   FILE   
+
+#vim /opt/DemoApp/pom.xml     #ADD  THE  FOLLOWING 
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.example</groupId>
+  <artifactId>DemoApp</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>war</packaging>
+  <name>DemoApp Maven Webapp</name>
+  <url>http://maven.apache.org</url>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>4.0.1</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <finalName>DemoApp</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>3.3.1</version>
+      </plugin>
+    </plugins>
+  </build>
+</project>
+
+Now save the   file     
+
+New   Project  is  created
+
+#ls -d  /opt/DemoApp  
+
+CREATE JAVA  CODE/SERVLET File INSIDE GIVEN PATH 
+
+#mkdir -p  /opt/DemoApp/src/main/java/com/example/
+
+#cd   /opt/DemoApp/src/main/java/com/example/ 
+
+#touch   HelloServlet.java  
+
+#vim  HelloServlet.java   #  Write   Java   Code  # Add the following
+
+#from start
+
+package com.example;
+
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@WebServlet(name = "HelloServlet", urlPatterns = {"/hello"})
+public class HelloServlet extends HttpServlet {
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        response.getWriter().println("<h1>Hello, World!</h1>");
+    }
+}
+
+#End
+
+####################################################
+
+Now   Build  The Project 
+
+Build Wep Application Run this  cmd  inside  directory where  pom.xml located
+
+#cd   /opt/DemoApp/
+
+#mvn clean package
+
+This command will compile the Java code, package and  test  with  junit tool and build the application into a WAR file 
+(DemoApp.war), and place it in the /opt/DemoApp/target directory.
+
+
+Check   the code /structure/list   with  this cmd
+
+#jar  -tf  /opt/DemoApp/target/DemoApp.war
+
+Next  we  can  copy/Deploy  the code  to   Tomcat    Server 
+
+Launch  Separate instance  and  install tomcat  else  use  the same  system
+
+Install Tomcat 
+
+#cd  /opt
+
+#wget   https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.111/bin/apache-tomcat-9.0.111.tar.gz
+
+#tar  -zxvf   apache-tomcat-9.0.111.tar.gz
+
+Start Tomcat 
+
+#/opt/apache-tomcat-9.0.111/bin/startup.sh
+
+#lsof  -i   :8080   #check  open port
+
+Now  Copy/Deploy  the  App/Aritifact From Maven Server  to  Tomcat Server
+
+#scp  -rv  /opt/DemoApp/target/DemoApp.war   tomcatip:/opt/apache-tomcat-9.0.111/webapps/
+or
+#cp   if same system
+
+# open   8080  port  in  Security Group 
+
+Try 
+#http://tomcatip:8080
+
+#http://tomcatip:8080/hello/
+
+#http://tomcatip:8080/DemoApp/hello/
+
+
